@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { useDispatch } from "react-redux";
 import { LOGIN_SUCESS } from "../../actions/types";
+import Toast from 'react-native-root-toast';
 import axios from 'axios';
 import styles from "./style";
-import { ActivityIndicator, Alert, Keyboard, Text, View, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, AsyncStorage } from 'react-native';
+import { ActivityIndicator, Keyboard, Text, View, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { Button } from 'react-native-elements';
 
 const LoginScreen = props => {
@@ -13,6 +14,15 @@ const LoginScreen = props => {
   const [password, setPassword] = useState('')
   const [isLoading, setisLoading] = useState(false)
   const userLogin = useDispatch()
+
+  useEffect(() => { chekIfLogged() }, []);
+
+  const chekIfLogged = async () => {
+    const tokenString = await AsyncStorage.getItem('token')
+    if (tokenString){
+      props.navigation.navigate('Home')
+    }    
+  }
 
   const onLoginPress = async () => {
     Keyboard.dismiss()
@@ -26,21 +36,23 @@ const LoginScreen = props => {
     )
       .then(async response => {
         if (response.status == 200) {
-          userLogin({ type: LOGIN_SUCESS, payload: response.data })
-          AsyncStorage.setItem('token', response.data.token);
+          // userLogin({ type: LOGIN_SUCESS, payload: response.data })
+          await AsyncStorage.setItem('user', response.data.user.cpf);
+          await AsyncStorage.setItem('token', response.data.token);
           setisLoading(false)
           props.navigation.navigate('Home')
         }
       })
       .catch(err => {
-        Alert.alert(
-          'Acesso Negado',
-          'Login e/ou senha inválidos!',
-          [
-            { text: 'OK' },
-          ],
-          { cancelable: true },
-        );
+        Toast.show('Login e/ou senha inválidos!', {
+          duration: Toast.durations.LONG,
+          position: 50,
+          shadow: true,
+          animation: true,
+          hideOnPress: true,
+          delay: 0,
+          backgroundColor: '#ff0000'
+        });
         setisLoading(false)
       })
   }

@@ -2,8 +2,8 @@ import React from 'react'
 import { createSwitchNavigator, createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation';
 import LoginScreen from "../screens/login/login";
 import LoadingScreen from "../screens/loading/loading";
-import TesteScreen from "../screens/teste/teste";
-import Teste2Screen from "../screens/teste/teste2";
+import HomeScreen from "../screens/home/homeScreen";
+import InventarioListScreen from "../screens/inventario/inventarioList";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../components/headerButton";
 import { AsyncStorage } from "react-native";
@@ -23,10 +23,10 @@ const AuthStack = createStackNavigator(
 
 const AppStack = createStackNavigator({
     Home: {
-        screen: TesteScreen
+        screen: HomeScreen
     },
-    Teste2: {
-        screen: Teste2Screen
+    InventarioList: {
+        screen: InventarioListScreen
     }
 },
     {
@@ -36,7 +36,7 @@ const AppStack = createStackNavigator({
                     (
                         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
                             <Item title="teste" iconName="ios-log-out" onPress={() => {
-                                AsyncStorage.removeItem('token')
+                                AsyncStorage.clear()
                                 navigation.navigate('SignIn')
                             }}
                             />
