@@ -1,14 +1,48 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { useNetInfo } from "@react-native-community/netinfo";
-
+import { useDispatch } from "react-redux";
+import { LOGIN_SUCESS } from "../../actions/types";
+import axios from 'axios';
 import styles from "./style";
-import { Keyboard, Text, View, TextInput, TouchableWithoutFeedback, Alert, KeyboardAvoidingView, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Text, View, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { Button } from 'react-native-elements';
 
 const LoginScreen = props => {
 
-  const onLoginPress = () => {
-    props.navigation.navigate('Home')
+  const [login, setLogin] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setisLoading] = useState(false)
+  const userLogin = useDispatch()
+
+  const onLoginPress = async () => {
+    Keyboard.dismiss()
+    setisLoading(true)
+
+    axios.post('https://jithub.firebaseapp.com/api/user/login',
+      {
+        cpf: login,
+        password: password
+      }
+    )
+      .then(async response => {
+        if (response.status == 200) {
+          userLogin({ type: LOGIN_SUCESS, payload: response.data })
+          AsyncStorage.setItem('token', response.data.token);
+          setisLoading(false)
+          props.navigation.navigate('Home')
+        }
+      })
+      .catch(err => {
+        Alert.alert(
+          'Acesso Negado',
+          'Login e/ou senha inválidos!',
+          [
+            { text: 'OK' },
+          ],
+          { cancelable: true },
+        );
+        setisLoading(false)
+      })
   }
 
   const netInfo = useNetInfo();
@@ -17,24 +51,28 @@ const LoginScreen = props => {
   const textOk = <Text style={styles.textOk}> Conectado a Internet </Text>
 
   return (
-    <KeyboardAvoidingView style={styles.containerView} behavior="padding">
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.loginScreenContainer}>
-          <View style={styles.loginFormView}>
-            <Text style={styles.logoText}>AGEM</Text>
-            <TextInput placeholder="Cpf" placeholderColor="#c4c3cb" style={styles.loginFormTextInput} />
-            <TextInput placeholder="Senha" placeholderColor="#c4c3cb" style={styles.loginFormTextInput} secureTextEntry={true} />
-            <Button
-              disabled={netInfo.isConnected ? false : true}
-              buttonStyle={styles.loginButton}
-              onPress={() => onLoginPress()}
-              title="Acessar"
-            />
-          </View>
-          {netInfo.isConnected ? textOk : textWarning}
+
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.loginScreenContainer}>
+        <View style={styles.loginFormView}>
+          <Text style={styles.logoText}>AGEM</Text>
+          <KeyboardAvoidingView style={styles.containerView} behavior="padding">
+            <TextInput placeholder="Cpf" placeholderColor="#c4c3cb" style={styles.loginFormTextInput} value={login} onChangeText={setLogin} />
+            <TextInput placeholder="Senha" placeholderColor="#c4c3cb" style={styles.loginFormTextInput} secureTextEntry={true} value={password} onChangeText={setPassword} />
+            {isLoading == false ?
+              <Button
+                disabled={netInfo.isConnected ? false : true}
+                buttonStyle={styles.loginButton}
+                onPress={() => onLoginPress()}
+                title="Acessar"
+              /> :
+              <ActivityIndicator size="small" color="#0000ff" />
+            }
+          </KeyboardAvoidingView>
         </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        {netInfo.isConnected ? textOk : textWarning}
+      </View>
+    </TouchableWithoutFeedback >
   );
 
 }

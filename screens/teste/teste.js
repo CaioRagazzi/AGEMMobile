@@ -1,7 +1,7 @@
 import React from "react";
-import { View, StyleSheet, Button } from 'react-native';
+import { View, StyleSheet, Button, AsyncStorage, Text } from 'react-native';
 
-const TesteScreen = props => {    
+const TesteScreen = props => {
     return (
         <View style={styles.Container}>
             <Button title="vai pra 2" onPress={() => {props.navigation.navigate('Teste2')}} />

@@ -6,6 +6,7 @@ import TesteScreen from "../screens/teste/teste";
 import Teste2Screen from "../screens/teste/teste2";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../components/headerButton";
+import { AsyncStorage } from "react-native";
 
 const AuthStack = createStackNavigator(
     {
@@ -34,7 +35,11 @@ const AppStack = createStackNavigator({
                 headerRight:
                     (
                         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-                            <Item title="teste" iconName="ios-log-out" onPress={() => { navigation.navigate('SignIn') }} />
+                            <Item title="teste" iconName="ios-log-out" onPress={() => {
+                                AsyncStorage.removeItem('token')
+                                navigation.navigate('SignIn')
+                            }}
+                            />
                         </HeaderButtons>
                     ),
                 headerLeft:

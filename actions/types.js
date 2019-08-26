@@ -1,0 +1,2 @@
+export const LOGIN_SUCESS = 'LOGIN_SUCESS';
+export const LOGIN_FORBIDEN = 'LOGIN_FORBIDEN' 
