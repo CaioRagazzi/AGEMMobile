@@ -1,7 +1,7 @@
 import React from 'react'
 import { createSwitchNavigator, createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation';
 import LoginScreen from "../screens/login/login";
-import LoadingScreen from "../screens/loading/loading";
+import EstabelecimentoSelectScreen from "../screens/estabelecimento/estabelecimento";
 import HomeScreen from "../screens/home/homeScreen";
 import InventarioListScreen from "../screens/inventario/inventarioList";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
@@ -13,6 +13,9 @@ const AuthStack = createStackNavigator(
         SignIn: {
             screen: LoginScreen
         },
+        EstabelecimentoSelect: {
+            screen: EstabelecimentoSelectScreen
+        }
     },
     {
         defaultNavigationOptions: {

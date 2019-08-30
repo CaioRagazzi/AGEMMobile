@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNetInfo } from "@react-native-community/netinfo";
-import { useDispatch } from "react-redux";
-import { LOGIN_SUCESS } from "../../actions/types";
 import Toast from 'react-native-root-toast';
 import axios from 'axios';
 import styles from "./style";
-import { ActivityIndicator, Keyboard, Text, View, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, AsyncStorage } from 'react-native';
+import { Keyboard, Text, View, TextInput, TouchableWithoutFeedback, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { Button } from 'react-native-elements';
 
 const LoginScreen = props => {
@@ -13,14 +11,13 @@ const LoginScreen = props => {
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setisLoading] = useState(false)
-  const userLogin = useDispatch()
 
   useEffect(() => { chekIfLogged() }, []);
 
   const chekIfLogged = async () => {
     const tokenString = await AsyncStorage.getItem('token')
     if (tokenString){
-      props.navigation.navigate('Home')
+      props.navigation.navigate('EstabelecimentoSelect')
     }    
   }
 
@@ -36,11 +33,10 @@ const LoginScreen = props => {
     )
       .then(async response => {
         if (response.status == 200) {
-          // userLogin({ type: LOGIN_SUCESS, payload: response.data })
           await AsyncStorage.setItem('user', response.data.user.cpf);
           await AsyncStorage.setItem('token', response.data.token);
           setisLoading(false)
-          props.navigation.navigate('Home')
+          props.navigation.navigate('EstabelecimentoSelect')
         }
       })
       .catch(err => {
@@ -71,15 +67,13 @@ const LoginScreen = props => {
           <KeyboardAvoidingView style={styles.containerView} behavior="padding">
             <TextInput placeholder="Cpf" placeholderColor="#c4c3cb" style={styles.loginFormTextInput} value={login} onChangeText={setLogin} />
             <TextInput placeholder="Senha" placeholderColor="#c4c3cb" style={styles.loginFormTextInput} secureTextEntry={true} value={password} onChangeText={setPassword} />
-            {isLoading == false ?
               <Button
                 disabled={netInfo.isConnected ? false : true}
                 buttonStyle={styles.loginButton}
                 onPress={() => onLoginPress()}
+                loading={isLoading}
                 title="Acessar"
-              /> :
-              <ActivityIndicator size="small" color="#0000ff" />
-            }
+              />
           </KeyboardAvoidingView>
         </View>
         {netInfo.isConnected ? textOk : textWarning}
